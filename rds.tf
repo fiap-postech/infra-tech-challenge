@@ -1,7 +1,7 @@
 resource "aws_security_group" "rds_sg" {
-  name    = local.rds.name
-  ingress = local.rds.ingress
-  egress  = local.rds.egress
+  name    = local.rds.sg.name
+  ingress = local.rds.sg.ingress
+  egress  = local.rds.sg.egress
 }
 
 data "aws_secretsmanager_secret" "database_admin_secret" {

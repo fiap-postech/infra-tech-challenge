@@ -1,5 +1,5 @@
 resource "aws_s3_bucket" "cdn_bucket" {
-  bucket = local.bucket.name
+  bucket        = local.bucket.name
   force_destroy = true
 
   tags = {

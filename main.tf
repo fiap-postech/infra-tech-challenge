@@ -5,7 +5,7 @@ terraform {
     organization = "fiap-pos-tech"
 
     workspaces {
-      name = "infra-tech-challenge"
+      name = "tech-challenge"
     }
   }
 

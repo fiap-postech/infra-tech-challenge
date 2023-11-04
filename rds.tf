@@ -1,7 +1,17 @@
 resource "aws_security_group" "rds_sg" {
-  name    = local.rds.sg.name
-  ingress = local.rds.sg.ingress
-  egress  = local.rds.sg.egress
+  name = local.rds.sg.name
+  ingress {
+    from_port   = local.rds.sg.ingress.from_port
+    to_port     = local.rds.sg.ingress.to_port
+    protocol    = local.rds.sg.ingress.protocol
+    cidr_blocks = local.rds.sg.ingress.cidr_blocks
+  }
+  egress {
+    from_port   = local.rds.sg.egress.from_port
+    to_port     = local.rds.sg.egress.to_port
+    protocol    = local.rds.sg.egress.protocol
+    cidr_blocks = local.rds.sg.egress.cidr_blocks
+  }
 }
 
 data "aws_secretsmanager_secret" "database_admin_secret" {
@@ -11,7 +21,7 @@ data "aws_secretsmanager_secret" "database_admin_secret" {
 data "aws_secretsmanager_secret_version" "database_admin_secret_version" {
   secret_id = data.aws_secretsmanager_secret.database_admin_secret.id
 
-  depends_on = [aws_secretsmanager_secret.database_admin_secret]
+  depends_on = [data.aws_secretsmanager_secret.database_admin_secret]
 }
 
 resource "aws_secretsmanager_secret" "app_database_password_secret" {
@@ -19,7 +29,7 @@ resource "aws_secretsmanager_secret" "app_database_password_secret" {
 }
 
 resource "aws_secretsmanager_secret_version" "app_database_password_version" {
-  secret_id     = aws_secretsmanager_secret.auth_signer_secret.id
+  secret_id     = aws_secretsmanager_secret.app_database_password_secret.id
   secret_string = var.app_database_password
 
   depends_on = [aws_secretsmanager_secret.app_database_password_secret]
@@ -39,7 +49,7 @@ resource "aws_db_instance" "tech_challenge_db" {
   publicly_accessible    = local.rds.instance.publicly_accessible
 
   depends_on = [
-    aws_secretsmanager_secret_version.database_admin_secret_version,
+    data.aws_secretsmanager_secret_version.database_admin_secret_version,
     aws_security_group.rds_sg
   ]
 }

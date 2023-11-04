@@ -18,7 +18,7 @@ resource "aws_s3_bucket_website_configuration" "cdn_website_configuration" {
     key = "index.html"
   }
 
-  depends_on = [ aws_s3_bucket.cdn_bucket ]
+  depends_on = [aws_s3_bucket.cdn_bucket]
 }
 
 resource "aws_s3_bucket_versioning" "cdn_versioning" {
@@ -28,7 +28,7 @@ resource "aws_s3_bucket_versioning" "cdn_versioning" {
     status = "Enabled"
   }
 
-  depends_on = [ aws_s3_bucket.cdn_bucket ]
+  depends_on = [aws_s3_bucket.cdn_bucket]
 }
 
 resource "aws_s3_bucket_ownership_controls" "cdn_ownership_controls" {
@@ -38,7 +38,7 @@ resource "aws_s3_bucket_ownership_controls" "cdn_ownership_controls" {
     object_ownership = "BucketOwnerPreferred"
   }
 
-  depends_on = [ aws_s3_bucket.cdn_bucket ]
+  depends_on = [aws_s3_bucket.cdn_bucket]
 }
 
 resource "aws_s3_bucket_public_access_block" "cdn_public_access_block" {
@@ -49,7 +49,7 @@ resource "aws_s3_bucket_public_access_block" "cdn_public_access_block" {
   ignore_public_acls      = false
   restrict_public_buckets = false
 
-  depends_on = [ aws_s3_bucket.cdn_bucket ]
+  depends_on = [aws_s3_bucket.cdn_bucket]
 }
 
 resource "aws_s3_bucket_acl" "cdn_bucket_acl" {
@@ -72,5 +72,5 @@ resource "aws_s3_object" "static_content" {
   force_destroy = true
   etag          = filemd5("./cdn/${each.value}")
 
-  depends_on = [ aws_s3_bucket_acl.cdn_bucket_acl ]
+  depends_on = [aws_s3_bucket_acl.cdn_bucket_acl]
 }

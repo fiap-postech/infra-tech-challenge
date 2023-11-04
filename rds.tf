@@ -22,7 +22,7 @@ resource "aws_secretsmanager_secret_version" "app_database_password_version" {
   secret_id     = aws_secretsmanager_secret.auth_signer_secret.id
   secret_string = var.app_database_password
 
-  depends_on = [ aws_secretsmanager_secret.app_database_password_secret ]
+  depends_on = [aws_secretsmanager_secret.app_database_password_secret]
 }
 
 resource "aws_db_instance" "tech_challenge_db" {

@@ -24,17 +24,17 @@ locals {
       }
     }
     instance = {
-      engine               = "mysql"
-      identifier           = "tech-challenge-database"
-      allocated_storage    = 10
-      engine_version       = "8.0.34"
-      instance_class       = "db.t2.micro"
-      username             = "admin"
+      engine                     = "mysql"
+      identifier                 = "tech-challenge-database"
+      allocated_storage          = 10
+      engine_version             = "8.0.34"
+      instance_class             = "db.t2.micro"
+      username                   = "admin"
       password_admin_secret_name = "database/Admin/Password"
-      password_app_secret_name = "database/Service/Password"
-      parameter_group_name = "default.mysql8.0"
-      skip_final_snapshot  = true
-      publicly_accessible  = false
+      password_app_secret_name   = "database/Service/Password"
+      parameter_group_name       = "default.mysql8.0"
+      skip_final_snapshot        = true
+      publicly_accessible        = false
     }
   }
 }

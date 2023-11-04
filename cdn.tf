@@ -54,11 +54,13 @@ resource "aws_s3_bucket_acl" "cdn_bucket_acl" {
   acl    = "public-read"
 }
 
-resource "aws_s3_bucket_object" "static_content" {
+resource "aws_s3_object" "static_content" {
   for_each = fileset("./cdn/", "**")
 
-  bucket = aws_s3_bucket.cdn_bucket.id
-  key    = each.value
-  source = "./cdn/${each.value}"
-  etag   = filemd5("./cdn/${each.value}")
+  bucket        = aws_s3_bucket.cdn_bucket.id
+  key           = each.value
+  source        = "./cdn/${each.value}"
+  acl           = "public-read"
+  force_destroy = true
+  etag          = filemd5("./cdn/${each.value}")
 }

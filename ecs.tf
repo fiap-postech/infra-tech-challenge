@@ -68,7 +68,7 @@ resource "aws_lb" "alb" {
   name               = local.ecs.alb.name
   internal           = local.ecs.alb.internal
   load_balancer_type = local.ecs.alb.load_balancer_type
-  security_groups    = [aws_security_group.alb_sg]
+  security_groups    = [aws_security_group.alb_sg.id]
   subnets            = [for s in data.aws_subnet.private_selected : s.id]
 
   enable_deletion_protection = local.ecs.alb.enable_deletion_protection

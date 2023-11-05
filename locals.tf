@@ -1,6 +1,8 @@
 locals {
   default_region = "us-east-1"
 
+  vpc_name = "tc-vpc"
+
   bucket = {
     name      = "tech-challenge-cdn"
     log       = "log-tech-challenge-cdn"
@@ -11,10 +13,9 @@ locals {
     sg = {
       name = "rds_sg"
       ingress = {
-        from_port   = 3306
-        to_port     = 3306
-        protocol    = "tcp"
-        cidr_blocks = ["0.0.0.0/0"]
+        from_port = 3306
+        to_port   = 3306
+        protocol  = "tcp"
       }
       egress = {
         from_port   = 0

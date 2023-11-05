@@ -1,10 +1,13 @@
 resource "aws_security_group" "rds_sg" {
-  name = local.rds.sg.name
+  name   = local.rds.sg.name
+  vpc_id = data.aws_vpc.main.id
+
   ingress {
-    from_port   = local.rds.sg.ingress.from_port
-    to_port     = local.rds.sg.ingress.to_port
-    protocol    = local.rds.sg.ingress.protocol
-    cidr_blocks = local.rds.sg.ingress.cidr_blocks
+    from_port        = local.rds.sg.ingress.from_port
+    to_port          = local.rds.sg.ingress.to_port
+    protocol         = local.rds.sg.ingress.protocol
+    cidr_blocks      = [for s in data.aws_subnet.private_selected : s.cidr_block]
+    ipv6_cidr_blocks = []
   }
   egress {
     from_port   = local.rds.sg.egress.from_port
@@ -12,6 +15,8 @@ resource "aws_security_group" "rds_sg" {
     protocol    = local.rds.sg.egress.protocol
     cidr_blocks = local.rds.sg.egress.cidr_blocks
   }
+
+  depends_on = [data.aws_subnet.private_selected]
 }
 
 data "aws_secretsmanager_secret" "database_admin_secret" {

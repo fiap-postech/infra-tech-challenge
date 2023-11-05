@@ -24,7 +24,6 @@ resource "aws_security_group" "redis_sg" {
 }
 
 resource "aws_elasticache_replication_group" "redis" {
-  automatic_failover_enabled = local.redis.replication_group.automatic_failover_enabled
   availability_zones         = local.redis.replication_group.availability_zones
   replication_group_id       = local.redis.replication_group.replication_group_id
   description                = local.redis.replication_group.description

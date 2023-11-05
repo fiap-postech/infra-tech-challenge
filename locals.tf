@@ -63,8 +63,7 @@ locals {
     }
 
     replication_group = {
-      automatic_failover_enabled = true
-      availability_zones         = ["us-east-1a", "us-east-1b", "sa-east-1c"]
+      availability_zones         = ["us-east-1a"]
       replication_group_id       = "tech-challenge-redis"
       description                = "cache for customer cart purposes"
       node_type                  = "cache.t3.micro"

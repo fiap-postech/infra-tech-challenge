@@ -116,7 +116,7 @@ resource "aws_lb_target_group" "target_group" {
   }
 }
 
-resource "aws_cloudwatch_log_group" "application_log_group" {
+resource "aws_cloudwatch_log_group" "service_log_group" {
   name              = local.ecs.log_group.name
   retention_in_days = local.ecs.log_group.retention_in_days
 
@@ -143,7 +143,7 @@ resource "aws_iam_role" "service_execution_role" {
 }
 
 # Cluster Execution Role
-resource "aws_iam_role_policy" "service_execution_role_policy" {
+resource "aws_iam_role_policy" "service_execution_policy" {
   name = local.ecs.iam.policy_name
   role = aws_iam_role.service_execution_role.id
   policy = jsonencode({
@@ -172,5 +172,63 @@ resource "aws_iam_role_policy" "service_execution_role_policy" {
   depends_on = [
     aws_iam_role.service_execution_role,
     aws_secretsmanager_secret.app_database_password_secret
+  ]
+}
+
+resource "aws_ecs_task_definition" "task_definition" {
+  family                   = local.ecs.task_definition.family
+  execution_role_arn       = aws_iam_role.service_execution_role.arn
+  task_role_arn            = aws_iam_role.service_execution_role.arn
+  requires_compatibilities = local.ecs.task_definition.requires_compatibilities
+  network_mode             = local.ecs.task_definition.network_mode
+  cpu                      = local.ecs.task_definition.cpu
+  memory                   = local.ecs.task_definition.memory
+
+  container_definitions = jsonencode([
+    {
+      name              = local.ecs.task_definition.container_definitions.name
+      image             = local.ecs.task_definition.container_definitions.image
+      cpu               = local.ecs.task_definition.container_definitions.cpu
+      memory            = local.ecs.task_definition.container_definitions.memory
+      memoryReservation = local.ecs.task_definition.container_definitions.memoryReservation
+      essential         = local.ecs.task_definition.container_definitions.essential
+      logConfiguration = {
+        "logDriver"     = "awslogs"
+        "secretOptions" = null
+        "options" = {
+          "awslogs-group"         = aws_cloudwatch_log_group.service_log_group.name
+          "awslogs-region"        = "us-east-1"
+          "awslogs-stream-prefix" = "ecs"
+        }
+      }
+      portMappings = local.ecs.task_definition.container_definitions.portMappings
+      entryPoint   = local.ecs.task_definition.container_definitions.entryPoint
+      environment = concat(
+        local.ecs.task_definition.container_definitions.environment,
+        [
+          {
+            name  = "spring.data.redis.host"
+            value = aws_elasticache_replication_group.redis.primary_endpoint_address
+          },
+          {
+            name  = "db.host"
+            value = aws_db_instance.tech_challenge_db.address
+          }
+        ]
+      )
+      secrets = [
+        {
+          name      = "db.password"
+          valueFrom = aws_secretsmanager_secret.app_database_password_secret.arn
+        }
+      ]
+    }
+  ])
+
+
+  depends_on = [
+    aws_iam_role.service_execution_role,
+    aws_iam_role_policy.service_execution_policy,
+    aws_cloudwatch_log_group.service_log_group
   ]
 }

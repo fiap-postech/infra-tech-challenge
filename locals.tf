@@ -116,6 +116,44 @@ locals {
       policy_name = "tech_challenge_service_execution_policy"
     }
 
+    task_definition = {
+      family                   = "tsk-tech-challenge"
+      requires_compatibilities = ["FARGATE"]
+      network_mode             = "awsvpc"
+      cpu                      = 1024
+      memory                   = 2048
+
+      container_definitions = {
+        name              = "docker.io/fiapsoat2grupo13/tech-challenge-service:latest"
+        image             = "x"
+        cpu               = 1
+        memory            = 2048
+        memoryReservation = 2048
+        essential         = true
+        portMappings = [
+          {
+            containerPort = 8080
+            protocol      = "tcp"
+            hostPort      = 8080
+          }
+        ]
+        entryPoint = [
+          "java",
+          "-Duser.timezone=GMT-3",
+          "-Djava.security.egd=file:/dev/./urandom",
+          "-jar",
+          "tech-challenge.jar"
+        ]
+        environment = [
+          {
+            name  = "spring.profiles.active"
+            value = "prod"
+          }
+        ]
+      }
+    }
+
+
     alb = {
       name                       = "tech-challenge-alb"
       internal                   = true

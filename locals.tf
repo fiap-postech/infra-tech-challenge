@@ -111,6 +111,11 @@ locals {
       retention_in_days = 1
     }
 
+    iam = {
+      role_name   = "tech_challenge_service_execution_role"
+      policy_name = "tech_challenge_service_execution_policy"
+    }
+
     alb = {
       name                       = "tech-challenge-alb"
       internal                   = true

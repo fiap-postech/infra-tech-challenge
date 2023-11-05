@@ -4,9 +4,12 @@ data "aws_vpc" "main" {
   }
 }
 
-data "aws_subnet" "private_selected" {
-  vpc_id = data.aws_vpc.main.id
+data "aws_subnets" "private_selected" {
 
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.main.id]
+  }
   filter {
     name   = "tag:Scope"
     values = ["private"]

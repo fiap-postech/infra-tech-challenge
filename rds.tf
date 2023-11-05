@@ -6,7 +6,7 @@ resource "aws_security_group" "rds_sg" {
     from_port        = local.rds.sg.ingress.from_port
     to_port          = local.rds.sg.ingress.to_port
     protocol         = local.rds.sg.ingress.protocol
-    cidr_blocks      = [for s in data.aws_subnets.private_selected : s.cidr_block]
+    cidr_blocks      = [for s in data.aws_subnet.private_selected : s.cidr_block]
     ipv6_cidr_blocks = []
   }
   egress {
@@ -16,7 +16,7 @@ resource "aws_security_group" "rds_sg" {
     cidr_blocks = local.rds.sg.egress.cidr_blocks
   }
 
-  depends_on = [data.aws_subnets.private_selected]
+  depends_on = [data.aws_subnet.private_selected]
 }
 
 data "aws_secretsmanager_secret" "database_admin_secret" {

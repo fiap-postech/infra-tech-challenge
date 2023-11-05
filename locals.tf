@@ -24,6 +24,11 @@ locals {
         cidr_blocks = ["0.0.0.0/0"]
       }
     }
+
+    subnet_group = {
+      name = "tech-challenge-rds-subnet-group"
+    }
+
     instance = {
       engine                     = "mysql"
       identifier                 = "tech-challenge-database"

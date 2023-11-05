@@ -40,6 +40,15 @@ resource "aws_secretsmanager_secret_version" "app_database_password_version" {
   depends_on = [aws_secretsmanager_secret.app_database_password_secret]
 }
 
+resource "aws_db_subnet_group" "tech_challenge_rds_subnet_group" {
+  name       = local.rds.subnet_group.name
+  subnet_ids = [for s in data.aws_subnet.private_selected : s.id]
+
+  tags = {
+    Name = local.rds.subnet_group.name
+  }
+}
+
 resource "aws_db_instance" "tech_challenge_db" {
   engine                 = local.rds.instance.engine
   identifier             = local.rds.instance.identifier
@@ -52,9 +61,11 @@ resource "aws_db_instance" "tech_challenge_db" {
   vpc_security_group_ids = ["${aws_security_group.rds_sg.id}"]
   skip_final_snapshot    = local.rds.instance.skip_final_snapshot
   publicly_accessible    = local.rds.instance.publicly_accessible
+  db_subnet_group_name   = aws_db_subnet_group.tech_challenge_rds_subnet_group.id
 
   depends_on = [
     data.aws_secretsmanager_secret_version.database_admin_secret_version,
+    aws_db_subnet_group.tech_challenge_rds_subnet_group,
     aws_security_group.rds_sg
   ]
 }

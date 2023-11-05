@@ -107,6 +107,37 @@ locals {
     }
 
     alb = {
+      name                       = "tech-challenge-alb"
+      internal                   = true
+      load_balancer_type         = "application"
+      enable_deletion_protection = false
+
+      listener = {
+        http = {
+          port     = "80"
+          protocol = "HTTP"
+        }
+      }
+
+      target_group = {
+        name        = "tech-challenge-tg"
+        port        = 8080
+        protocol    = "HTTP"
+        target_type = "ip"
+
+        health_check = {
+          enabled             = true
+          healthy_threshold   = 3
+          interval            = 30
+          matcher             = "200"
+          path                = "/monitor/health"
+          port                = 8080
+          protocol            = "HTTP"
+          timeout             = 10
+          unhealthy_threshold = 10
+        }
+      }
+
       sg = {
         name        = "alb-tech-challenge-sg"
         description = "tech-challenge alb security group"

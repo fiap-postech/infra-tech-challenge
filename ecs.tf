@@ -60,4 +60,58 @@ resource "aws_security_group" "service_sg" {
   tags = {
     Name = local.ecs.sg.name
   }
+
+  depends_on = [aws_security_group.alb_sg]
+}
+
+resource "aws_lb" "alb" {
+  name               = local.ecs.alb.name
+  internal           = local.ecs.alb.internal
+  load_balancer_type = local.ecs.alb.load_balancer_type
+  security_groups    = [aws_security_group.alb_sg]
+  subnets            = [for s in data.aws_subnet.private_selected : s.id]
+
+  enable_deletion_protection = local.ecs.alb.enable_deletion_protection
+
+  tags = {
+    name = local.ecs.alb.name
+  }
+
+  depends_on = [aws_security_group.alb_sg, data.aws_subnet.private_selected]
+}
+
+resource "aws_lb_listener" "listener_http" {
+  load_balancer_arn = aws_lb.alb.arn
+  port              = local.ecs.alb.listener.http.port
+  protocol          = local.ecs.alb.listener.http.protocol
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.target_group.arn
+  }
+
+  depends_on = [
+    aws_lb.alb,
+    aws_lb_target_group.target_group
+  ]
+}
+
+resource "aws_lb_target_group" "target_group" {
+  name        = local.ecs.alb.target_group.name
+  port        = local.ecs.alb.target_group.port
+  protocol    = local.ecs.alb.target_group.protocol
+  vpc_id      = data.aws_vpc.main.id
+  target_type = local.ecs.alb.target_group.target_type
+
+  health_check {
+    enabled             = local.ecs.alb.target_group.health_check.enabled
+    healthy_threshold   = local.ecs.alb.target_group.health_check.healthy_threshold
+    interval            = local.ecs.alb.target_group.health_check.interval
+    matcher             = local.ecs.alb.target_group.health_check.matcher
+    path                = local.ecs.alb.target_group.health_check.path
+    port                = local.ecs.alb.target_group.health_check.port
+    protocol            = local.ecs.alb.target_group.health_check.protocol
+    timeout             = local.ecs.alb.target_group.health_check.timeout
+    unhealthy_threshold = local.ecs.alb.target_group.health_check.unhealthy_threshold
+  }
 }

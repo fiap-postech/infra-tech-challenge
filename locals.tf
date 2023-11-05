@@ -124,8 +124,8 @@ locals {
       memory                   = 2048
 
       container_definitions = {
-        name              = "docker.io/fiapsoat2grupo13/tech-challenge-service:latest"
-        image             = "x"
+        name              = "tech-challenge-service"
+        image             = "docker.io/fiapsoat2grupo13/tech-challenge-service:latest"
         cpu               = 1
         memory            = 2048
         memoryReservation = 2048

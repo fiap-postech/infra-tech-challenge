@@ -115,3 +115,12 @@ resource "aws_lb_target_group" "target_group" {
     unhealthy_threshold = local.ecs.alb.target_group.health_check.unhealthy_threshold
   }
 }
+
+resource "aws_cloudwatch_log_group" "application_log_group" {
+  name              = local.ecs.log_group.name
+  retention_in_days = local.ecs.log_group.retention_in_days
+
+  tags = {
+    name = local.ecs.log_group.name
+  }
+}

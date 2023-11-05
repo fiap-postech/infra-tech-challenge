@@ -106,6 +106,11 @@ locals {
       }
     }
 
+    log_group = {
+      name              = "/ecs/tech-challenge"
+      retention_in_days = 1
+    }
+
     alb = {
       name                       = "tech-challenge-alb"
       internal                   = true

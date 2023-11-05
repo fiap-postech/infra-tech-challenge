@@ -47,6 +47,8 @@ resource "aws_db_subnet_group" "tech_challenge_rds_subnet_group" {
   tags = {
     Name = local.rds.subnet_group.name
   }
+
+  depends_on = [data.aws_subnet.private_selected]
 }
 
 resource "aws_db_instance" "tech_challenge_db" {

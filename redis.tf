@@ -23,6 +23,17 @@ resource "aws_security_group" "redis_sg" {
   depends_on = [data.aws_subnet.private_selected]
 }
 
+resource "aws_elasticache_subnet_group" "redis_subnet_group" {
+  name       = local.redis.subnet_group.name
+  subnet_ids = [for s in data.aws_subnet.private_selected : s.id]
+
+  tags = {
+    Name = local.redis.subnet_group.name
+  }
+
+  depends_on = [data.aws_subnet.private_selected]
+}
+
 resource "aws_elasticache_replication_group" "redis" {
   availability_zones         = local.redis.replication_group.availability_zones
   replication_group_id       = local.redis.replication_group.replication_group_id
@@ -35,6 +46,7 @@ resource "aws_elasticache_replication_group" "redis" {
   port                       = local.redis.replication_group.port
   transit_encryption_enabled = local.redis.replication_group.transit_encryption_enabled
   security_group_ids         = [aws_security_group.redis_sg.id]
+  subnet_group_name          = aws_elasticache_subnet_group.redis_subnet_group.name
 
   lifecycle {
     ignore_changes = [

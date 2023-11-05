@@ -62,6 +62,10 @@ locals {
       }
     }
 
+    subnet_group = {
+      name = "tech-challenge-redis-subnet-group"
+    }
+
     replication_group = {
       availability_zones         = ["us-east-1a"]
       replication_group_id       = "tech-challenge-redis"

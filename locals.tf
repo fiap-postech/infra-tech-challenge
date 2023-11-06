@@ -10,5 +10,4 @@ locals {
   }
 
   lambda_signer = "json-web-token-signer"
-  teste = "x"
 }

@@ -92,3 +92,37 @@ resource "aws_lambda_permission" "api_gw" {
 
   source_arn = "${aws_apigatewayv2_api.apigw_http_endpoint.execution_arn}/*/*"
 }
+
+resource "aws_apigatewayv2_integration" "auth_integration" {
+  api_id = aws_apigatewayv2_api.apigw_http_endpoint.id
+
+  integration_uri  = data.aws_lambda_function.lambda_signer.invoke_arn
+  integration_type = "AWS_PROXY"
+
+  depends_on = [data.aws_lambda_function.lambda_signer]
+}
+
+resource "aws_apigatewayv2_route" "auth_route" {
+  api_id    = aws_apigatewayv2_api.apigw_http_endpoint.id
+  route_key = "POST /auth"
+  target    = "integrations/${aws_apigatewayv2_integration.auth_integration.id}"
+
+  depends_on = [
+    aws_apigatewayv2_integration.apigw_integration,
+    aws_apigatewayv2_authorizer.authorizer
+  ]
+}
+
+resource "aws_lambda_permission" "api_gw_to_lambda_signer" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = data.aws_lambda_function.lambda_signer.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "${aws_apigatewayv2_api.apigw_http_endpoint.execution_arn}/*/*"
+
+  depends_on = [
+    data.aws_lambda_function.lambda_signer,
+    aws_apigatewayv2_api.apigw_http_endpoint
+  ]
+}

@@ -8,4 +8,6 @@ locals {
     log       = "log-tech-challenge-cdn"
     origin_id = "tech-challenge-cdn-origin"
   }
+
+  lambda_signer = "json-web-token-signer"
 }

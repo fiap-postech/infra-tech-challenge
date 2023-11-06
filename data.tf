@@ -57,3 +57,7 @@ data "aws_security_group" "vpc_endpoint_sm_cl" {
 data "aws_lambda_function" "lambda_authorizer" {
   function_name = local.api_gateway.authorization_lambda_name
 }
+
+data "aws_lambda_function" "lambda_signer" {
+  function_name = local.lambda_signer
+}

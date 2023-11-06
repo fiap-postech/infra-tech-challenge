@@ -29,6 +29,10 @@ locals {
       name = "tech-challenge-rds-subnet-group"
     }
 
+    secrets = {
+      name = "service/Database/Credential"
+    }
+
     instance = {
       engine                     = "mysql"
       identifier                 = "tech-challenge-database"

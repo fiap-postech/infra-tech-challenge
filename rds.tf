@@ -128,3 +128,26 @@ resource "mysql_grant" "service_user_grant" {
 
   depends_on = [mysql_user.service_user]
 }
+
+resource "aws_secretsmanager_secret" "database_credential" {
+  name                    = local.rds.secrets.name
+  recovery_window_in_days = 0
+}
+
+resource "aws_secretsmanager_secret_version" "signer_version" {
+  secret_id     = aws_secretsmanager_secret.database_credential.id
+  secret_string = <<EOF
+   {
+    "host": "${aws_db_instance.tech_challenge_db.address}",
+    "port": ${aws_db_instance.tech_challenge_db.port},
+    "username": "${aws_db_instance.tech_challenge_db.username}",
+    "password": "${aws_db_instance.tech_challenge_db.password}",
+    "schema": "${mysql_database.service_database.name}"
+   }
+EOF
+
+  depends_on = [
+    aws_db_instance.tech_challenge_db,
+    mysql_database.service_database
+  ]
+}

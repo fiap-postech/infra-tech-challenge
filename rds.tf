@@ -4,16 +4,26 @@ resource "aws_security_group" "rds_sg" {
 
   ingress = [
     {
-      description      = "allow connection from private subnet"
+      description      = "allow connection from database subnet"
       from_port        = local.rds.sg.ingress.from_port
       to_port          = local.rds.sg.ingress.to_port
       protocol         = local.rds.sg.ingress.protocol
-      cidr_blocks      = [for s in data.aws_subnet.private_selected : s.cidr_block]
+      cidr_blocks      = [for s in data.aws_subnet.database_selected : s.cidr_block]
       ipv6_cidr_blocks = []
       prefix_list_ids  = []
       security_groups  = []
       self             = null
-
+    },
+    {
+      description      = "allow connection from ecs"
+      from_port        = local.rds.sg.ingress.from_port
+      to_port          = local.rds.sg.ingress.to_port
+      protocol         = local.rds.sg.ingress.protocol
+      cidr_blocks      = []
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      security_groups  = [aws_security_group.service_sg.id]
+      self             = null
     },
     {
       description      = "allow connection from all world"
@@ -34,7 +44,10 @@ resource "aws_security_group" "rds_sg" {
     cidr_blocks = local.rds.sg.egress.cidr_blocks
   }
 
-  depends_on = [data.aws_subnet.private_selected]
+  depends_on = [
+    data.aws_subnet.database_selected,
+    aws_security_group.service_sg
+  ]
 }
 
 data "aws_secretsmanager_secret" "database_admin_secret" {
@@ -60,13 +73,13 @@ resource "aws_secretsmanager_secret_version" "app_database_password_version" {
 
 resource "aws_db_subnet_group" "tech_challenge_rds_subnet_group" {
   name       = local.rds.subnet_group.name
-  subnet_ids = [for s in data.aws_subnet.private_selected : s.id]
+  subnet_ids = [for s in data.aws_subnet.database_selected : s.id]
 
   tags = {
     Name = local.rds.subnet_group.name
   }
 
-  depends_on = [data.aws_subnet.private_selected]
+  depends_on = [data.aws_subnet.database_selected]
 }
 
 resource "aws_db_instance" "tech_challenge_db" {
@@ -90,27 +103,27 @@ resource "aws_db_instance" "tech_challenge_db" {
   ]
 }
 
-resource "mysql_database" "service_database" {
-  name                  = local.rds.setup.schema.name
-  default_character_set = local.rds.setup.schema.character_set
-  default_collation     = local.rds.setup.schema.collation
+# resource "mysql_database" "service_database" {
+#   name                  = local.rds.setup.schema.name
+#   default_character_set = local.rds.setup.schema.character_set
+#   default_collation     = local.rds.setup.schema.collation
 
-  depends_on = [aws_db_instance.tech_challenge_db]
-}
+#   depends_on = [aws_db_instance.tech_challenge_db]
+# }
 
-resource "mysql_user" "service_user" {
-  user               = local.rds.setup.user.name
-  host               = local.rds.setup.user.host
-  plaintext_password = aws_secretsmanager_secret_version.app_database_password_version.secret_string
+# resource "mysql_user" "service_user" {
+#   user               = local.rds.setup.user.name
+#   host               = local.rds.setup.user.host
+#   plaintext_password = aws_secretsmanager_secret_version.app_database_password_version.secret_string
 
-  depends_on = [mysql_database.service_database]
-}
+#   depends_on = [mysql_database.service_database]
+# }
 
-resource "mysql_grant" "service_user_grant" {
-  user       = mysql_user.service_user.user
-  host       = mysql_user.service_user.host
-  database   = mysql_database.service_database.name
-  privileges = local.rds.setup.grant_privileges
+# resource "mysql_grant" "service_user_grant" {
+#   user       = mysql_user.service_user.user
+#   host       = mysql_user.service_user.host
+#   database   = mysql_database.service_database.name
+#   privileges = local.rds.setup.grant_privileges
 
-  depends_on = [mysql_user.service_user]
-}
+#   depends_on = [mysql_user.service_user]
+# }

@@ -96,6 +96,8 @@ locals {
   }
 
   ecs = {
+    cluster_name = "tech-challenge"
+
     sg = {
       name        = "tech-challenge-sg"
       description = "tech-challenge security group"
@@ -139,8 +141,8 @@ locals {
       memory                   = 2048
 
       container_definitions = {
-        name              = "tech-challenge-service"
-        image             = "docker.io/fiapsoat2grupo13/tech-challenge-service:latest"
+        name              = "tech-challenge-container"
+        image             = "fiapsoat2grupo13/tech-challenge-service:latest"
         cpu               = 1
         memory            = 2048
         memoryReservation = 2048
@@ -167,7 +169,6 @@ locals {
         ]
       }
     }
-
 
     alb = {
       name                       = "tech-challenge-alb"
@@ -226,6 +227,16 @@ locals {
           cidr_blocks      = ["0.0.0.0/0"]
           ipv6_cidr_blocks = ["::/0"]
         }
+      }
+    }
+
+    service = {
+      name                              = "tech-challenge-service"
+      desired_count                     = 1
+      launch_type                       = "FARGATE"
+      health_check_grace_period_seconds = 120
+      load_balancer = {
+        container_port = "8080"
       }
     }
   }

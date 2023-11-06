@@ -3,10 +3,15 @@ resource "aws_security_group" "redis_sg" {
   name   = local.redis.sg.name
 
   ingress {
-    from_port   = local.redis.sg.ingress.from_port
-    to_port     = local.redis.sg.ingress.to_port
-    protocol    = local.redis.sg.ingress.protocol
-    cidr_blocks = [for s in data.aws_subnet.private_selected : s.cidr_block]
+    description      = "allow connection from ecs"
+    from_port        = local.redis.sg.ingress.from_port
+    to_port          = local.redis.sg.ingress.to_port
+    protocol         = local.redis.sg.ingress.protocol
+    cidr_blocks      = []
+    ipv6_cidr_blocks = []
+    prefix_list_ids  = []
+    security_groups  = [aws_security_group.service_sg.id]
+    self             = null
   }
 
   egress {
@@ -20,7 +25,7 @@ resource "aws_security_group" "redis_sg" {
     Name = local.redis.sg.name
   }
 
-  depends_on = [data.aws_subnet.private_selected]
+  depends_on = [aws_security_group.service_sg]
 }
 
 resource "aws_elasticache_subnet_group" "redis_subnet_group" {

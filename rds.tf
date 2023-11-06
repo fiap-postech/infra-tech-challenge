@@ -90,10 +90,10 @@ resource "aws_db_instance" "tech_challenge_db" {
   ]
 }
 
-resource "mysql_database" "service_database" {
-  name                  = "tech_challenge"
-  default_character_set = "utf8mb4"
-  default_collation     = "utf8mb4_0900_ai_ci"
+# resource "mysql_database" "service_database" {
+#   name                  = "tech_challenge"
+#   default_character_set = "utf8mb4"
+#   default_collation     = "utf8mb4_0900_ai_ci"
 
-  depends_on = [aws_db_instance.tech_challenge_db]
-}
+#   depends_on = [aws_db_instance.tech_challenge_db]
+# }

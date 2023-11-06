@@ -61,7 +61,8 @@ data "aws_secretsmanager_secret_version" "database_admin_secret_version" {
 }
 
 resource "aws_secretsmanager_secret" "app_database_password_secret" {
-  name = local.rds.instance.password_app_secret_name
+  name                    = local.rds.instance.password_app_secret_name
+  recovery_window_in_days = 0
 }
 
 resource "aws_secretsmanager_secret_version" "app_database_password_version" {

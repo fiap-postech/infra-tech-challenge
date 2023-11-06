@@ -30,39 +30,39 @@
 #   }
 # }
 
-# resource "aws_security_group" "service_sg" {
-#   name        = local.ecs.sg.name
-#   description = local.ecs.sg.description
-#   vpc_id      = data.aws_vpc.main.id
+resource "aws_security_group" "service_sg" {
+  name        = local.ecs.sg.name
+  description = local.ecs.sg.description
+  vpc_id      = data.aws_vpc.main.id
 
-#   ingress = [
-#     {
-#       description      = local.ecs.sg.ingress.description
-#       from_port        = local.ecs.sg.ingress.from_port
-#       to_port          = local.ecs.sg.ingress.to_port
-#       protocol         = local.ecs.sg.ingress.protocol
-#       cidr_blocks      = local.ecs.sg.ingress.cidr_blocks
-#       ipv6_cidr_blocks = local.ecs.sg.ingress.ipv6_cidr_blocks
-#       prefix_list_ids  = local.ecs.sg.ingress.prefix_list_ids
-#       security_groups  = [aws_security_group.alb_sg.id]
-#       self             = local.ecs.sg.ingress.self
-#     }
-#   ]
+  ingress = [
+    {
+      description      = local.ecs.sg.ingress.description
+      from_port        = local.ecs.sg.ingress.from_port
+      to_port          = local.ecs.sg.ingress.to_port
+      protocol         = local.ecs.sg.ingress.protocol
+      cidr_blocks      = local.ecs.sg.ingress.cidr_blocks
+      ipv6_cidr_blocks = local.ecs.sg.ingress.ipv6_cidr_blocks
+      prefix_list_ids  = local.ecs.sg.ingress.prefix_list_ids
+      security_groups  = [aws_security_group.alb_sg.id]
+      self             = local.ecs.sg.ingress.self
+    }
+  ]
 
-#   egress {
-#     from_port        = local.ecs.sg.egress.from_port
-#     to_port          = local.ecs.sg.egress.to_port
-#     protocol         = local.ecs.sg.egress.protocol
-#     cidr_blocks      = local.ecs.sg.egress.cidr_blocks
-#     ipv6_cidr_blocks = local.ecs.sg.egress.ipv6_cidr_blocks
-#   }
+  egress {
+    from_port        = local.ecs.sg.egress.from_port
+    to_port          = local.ecs.sg.egress.to_port
+    protocol         = local.ecs.sg.egress.protocol
+    cidr_blocks      = local.ecs.sg.egress.cidr_blocks
+    ipv6_cidr_blocks = local.ecs.sg.egress.ipv6_cidr_blocks
+  }
 
-#   tags = {
-#     Name = local.ecs.sg.name
-#   }
+  tags = {
+    Name = local.ecs.sg.name
+  }
 
-#   depends_on = [aws_security_group.alb_sg]
-# }
+  depends_on = [aws_security_group.alb_sg]
+}
 
 # resource "aws_lb" "alb" {
 #   name               = local.ecs.alb.name

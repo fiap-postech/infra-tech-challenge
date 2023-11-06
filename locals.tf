@@ -40,7 +40,22 @@ locals {
       password_app_secret_name   = "database/Service/Password"
       parameter_group_name       = "default.mysql8.0"
       skip_final_snapshot        = true
-      publicly_accessible        = false
+      publicly_accessible        = true
+    }
+
+    setup = {
+      schema = {
+        name          = "tech_challenge"
+        character_set = "utf8mb4"
+        collation     = "utf8mb4_0900_ai_ci"
+      }
+      user = {
+        name = "sys_tech_challenge"
+        host = "%"
+      }
+
+      grant_privileges = ["ALL"]
+
     }
   }
 

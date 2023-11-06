@@ -104,27 +104,27 @@ resource "aws_db_instance" "tech_challenge_db" {
   ]
 }
 
-# resource "mysql_database" "service_database" {
-#   name                  = local.rds.setup.schema.name
-#   default_character_set = local.rds.setup.schema.character_set
-#   default_collation     = local.rds.setup.schema.collation
+resource "mysql_database" "service_database" {
+  name                  = local.rds.setup.schema.name
+  default_character_set = local.rds.setup.schema.character_set
+  default_collation     = local.rds.setup.schema.collation
 
-#   depends_on = [aws_db_instance.tech_challenge_db]
-# }
+  depends_on = [aws_db_instance.tech_challenge_db]
+}
 
-# resource "mysql_user" "service_user" {
-#   user               = local.rds.setup.user.name
-#   host               = local.rds.setup.user.host
-#   plaintext_password = aws_secretsmanager_secret_version.app_database_password_version.secret_string
+resource "mysql_user" "service_user" {
+  user               = local.rds.setup.user.name
+  host               = local.rds.setup.user.host
+  plaintext_password = aws_secretsmanager_secret_version.app_database_password_version.secret_string
 
-#   depends_on = [mysql_database.service_database]
-# }
+  depends_on = [mysql_database.service_database]
+}
 
-# resource "mysql_grant" "service_user_grant" {
-#   user       = mysql_user.service_user.user
-#   host       = mysql_user.service_user.host
-#   database   = mysql_database.service_database.name
-#   privileges = local.rds.setup.grant_privileges
+resource "mysql_grant" "service_user_grant" {
+  user       = mysql_user.service_user.user
+  host       = mysql_user.service_user.host
+  database   = mysql_database.service_database.name
+  privileges = local.rds.setup.grant_privileges
 
-#   depends_on = [mysql_user.service_user]
-# }
+  depends_on = [mysql_user.service_user]
+}

@@ -10,7 +10,7 @@ provider "aws" {
 }
 
 provider "mysql" {
-    username = "admin"
-    password = "${data.aws_secretsmanager_secret.database_admin_secret.secret_string}"
-    endpoint = "${aws_db_instance.tech_challenge_db.endpoint}"
+  username = aws_db_instance.tech_challenge_db.username
+  password = aws_db_instance.tech_challenge_db.password
+  endpoint = aws_db_instance.tech_challenge_db.endpoint
 }

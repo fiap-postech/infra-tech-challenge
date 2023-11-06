@@ -54,7 +54,7 @@ locals {
         host = "%"
       }
 
-      grant_privileges = ["ALL"]
+      grant_privileges = ["ALL PRIVILEGES"]
 
     }
   }

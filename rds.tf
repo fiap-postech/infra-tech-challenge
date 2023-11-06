@@ -2,13 +2,31 @@ resource "aws_security_group" "rds_sg" {
   name   = local.rds.sg.name
   vpc_id = data.aws_vpc.main.id
 
-  ingress {
-    from_port        = local.rds.sg.ingress.from_port
-    to_port          = local.rds.sg.ingress.to_port
-    protocol         = local.rds.sg.ingress.protocol
-    cidr_blocks      = [for s in data.aws_subnet.private_selected : s.cidr_block]
-    ipv6_cidr_blocks = []
-  }
+  ingress = [
+    {
+      description      = "allow connection from private subnet"
+      from_port        = local.rds.sg.ingress.from_port
+      to_port          = local.rds.sg.ingress.to_port
+      protocol         = local.rds.sg.ingress.protocol
+      cidr_blocks      = [for s in data.aws_subnet.private_selected : s.cidr_block]
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      security_groups  = []
+      self             = null
+
+    },
+    {
+      description      = "allow connection from world"
+      from_port        = local.rds.sg.ingress.from_port
+      to_port          = local.rds.sg.ingress.to_port
+      protocol         = local.rds.sg.ingress.protocol
+      cidr_blocks      = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = []
+      prefix_list_ids  = []
+      security_groups  = []
+      self             = null
+    }
+  ]
   egress {
     from_port   = local.rds.sg.egress.from_port
     to_port     = local.rds.sg.egress.to_port

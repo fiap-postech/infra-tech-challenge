@@ -16,7 +16,7 @@ resource "aws_security_group" "rds_sg" {
 
     },
     {
-      description      = "allow connection from world"
+      description      = "allow connection from all world"
       from_port        = local.rds.sg.ingress.from_port
       to_port          = local.rds.sg.ingress.to_port
       protocol         = local.rds.sg.ingress.protocol

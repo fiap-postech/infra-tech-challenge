@@ -140,14 +140,15 @@ resource "aws_secretsmanager_secret_version" "signer_version" {
    {
     "host": "${aws_db_instance.tech_challenge_db.address}",
     "port": ${aws_db_instance.tech_challenge_db.port},
-    "username": "${aws_db_instance.tech_challenge_db.username}",
-    "password": "${aws_db_instance.tech_challenge_db.password}",
+    "username": "${local.rds.setup.user.name}",
+    "password": "${aws_secretsmanager_secret_version.app_database_password_version.secret_string}",
     "schema": "${mysql_database.service_database.name}"
    }
 EOF
 
   depends_on = [
     aws_db_instance.tech_challenge_db,
-    mysql_database.service_database
+    mysql_database.service_database,
+    aws_secretsmanager_secret_version.app_database_password_version
   ]
 }

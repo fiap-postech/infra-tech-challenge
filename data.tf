@@ -53,3 +53,7 @@ data "aws_ecs_cluster" "cluster" {
 data "aws_security_group" "vpc_endpoint_sm_cl" {
   name = "vpc-endpoints-secretsmanager-cloudwatchlogs-sg"
 }
+
+data "aws_lambda_function" "lambda_authorizer" {
+  function_name = local.api_gateway.authorization_lambda_name
+}
